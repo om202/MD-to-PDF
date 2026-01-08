@@ -94,11 +94,18 @@ export default function MarkdownEditor() {
                 .set({
                     margin: margin,
                     filename: 'document.pdf',
-                    html2canvas: { scale: 2 },
+                    image: { type: 'jpeg', quality: 1 },
+                    html2canvas: {
+                        scale: 4,
+                        useCORS: true,
+                        logging: false,
+                        dpi: 300,
+                        letterRendering: true,
+                    },
                     jsPDF: {
                         unit: 'mm',
                         format: sizes[pageSize],
-                        orientation: 'portrait' as const
+                        orientation: 'portrait' as const,
                     },
                 })
                 .from(element)
