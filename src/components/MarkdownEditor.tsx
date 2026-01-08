@@ -7,29 +7,86 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FileDown, FileText, Eye, Settings, Github, X } from 'lucide-react';
 
-const defaultMarkdown = `# Markdown to PDF Converter
+const defaultMarkdown = `# Welcome to MD to PDF Converter
 
-## Features
-- Live preview
-- Export to PDF
-- Multiple page sizes
-- Configurable margins
+> A powerful, free online tool for converting Markdown to professional PDF documents with live preview.
 
-## Example Content
+## 🚀 Key Features
 
-**Bold text** and *italic text*
+- **Live Preview** - See your formatted document in real-time
+- **High-Quality Export** - 300 DPI, professional-grade PDFs
+- **Multiple Page Sizes** - A4, Letter, Legal, and more
+- **Configurable Margins** - Choose from preset margin options
+- **Syntax Highlighting** - Beautiful code blocks
+- **No Sign-up Required** - Start using immediately
+
+### � Learn More
+
+New to Markdown? Check out the [Official Markdown Guide](https://www.markdownguide.org/) to master the syntax.
+
+---
+
+## �📝 Formatting Examples
+
+### Text Styling
+
+You can use **bold text**, *italic text*, or ***bold and italic*** together. You can also use ~~strikethrough~~ text.
 
 ### Lists
-- Item 1
-- Item 2
-- Item 3
 
-### Code
+#### Unordered Lists
+- First item
+- Second item
+  - Nested item 1
+  - Nested item 2
+- Third item
+
+#### Ordered Lists
+1. First step
+2. Second step
+3. Third step
+
+### Code Blocks
+
+Inline code: \`const greeting = "Hello, World!";\`
+
+JavaScript example:
 \`\`\`javascript
-console.log('Hello World');
+function generatePDF(content) {
+  const options = {
+    quality: 'high',
+    format: 'A4',
+    margin: '20mm'
+  };
+  return convertToPDF(content, options);
+}
 \`\`\`
 
-Start editing!`;
+Python example:
+\`\`\`python
+def calculate_total(items):
+    return sum(item.price for item in items)
+\`\`\`
+
+### Tables
+
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Live Preview | ✅ Ready | High |
+| PDF Export | ✅ Ready | High |
+| Custom Themes | 🚧 Coming | Medium |
+
+---
+
+## 💡 Getting Started
+
+1. Edit this text in the left panel
+2. See your changes in real-time on the right
+3. Click **Export PDF** to preview
+4. Download your professional PDF
+
+**Ready to create your own document? Start editing now!**
+`;
 
 // Page size dimensions in mm [width, height]
 const PAGE_SIZES: Record<string, { label: string; size: [number, number] }> = {
