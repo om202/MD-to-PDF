@@ -50,3 +50,21 @@ body {
 .prose :where(code):not(:where(pre code))::after {
     content: none;
 }
+
+/* Prevent text cutoff */
+.prose {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+.prose pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.prose code {
+    word-break: break-all;
+}
