@@ -1,3 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Modern Light Theme - Clean & Simple */
+@theme {
+    --font-sans: "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+    /* Clean neutral palette */
+    --color-surface: #ffffff;
+    --color-background: #f8f9fa;
+    --color-border: #e5e7eb;
+    --color-border-light: #f1f3f5;
+
+    /* Text colors */
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #6b7280;
+    --color-text-muted: #9ca3af;
+
+    /* Accent */
+    --color-accent: #2563eb;
+    --color-accent-hover: #1d4ed8;
+}
+
+/* Base styles */
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+}
+
+/* Clean focus styles */
+*:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
