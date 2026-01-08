@@ -29,10 +29,30 @@ console.log('Hello World');
 
 Start editing!`;
 
+// Page size dimensions in mm [width, height]
+const PAGE_SIZES: Record<string, { label: string; size: [number, number] }> = {
+    a3: { label: 'A3', size: [297, 420] },
+    a4: { label: 'A4', size: [210, 297] },
+    a5: { label: 'A5', size: [148, 210] },
+    b5: { label: 'B5', size: [176, 250] },
+    letter: { label: 'Letter', size: [216, 279] },
+    legal: { label: 'Legal', size: [216, 356] },
+    tabloid: { label: 'Tabloid', size: [279, 432] },
+    executive: { label: 'Executive', size: [184, 267] },
+};
+
+// Margin presets in mm
+const MARGIN_PRESETS: Record<string, { label: string; value: number }> = {
+    none: { label: 'None', value: 0 },
+    narrow: { label: 'Narrow', value: 10 },
+    normal: { label: 'Normal', value: 20 },
+    wide: { label: 'Wide', value: 30 },
+};
+
 export default function MarkdownEditor() {
     const [markdown, setMarkdown] = useState(defaultMarkdown);
     const [pageSize, setPageSize] = useState('a4');
-    const [margin, setMargin] = useState(15);
+    const [marginPreset, setMarginPreset] = useState('normal');
     const [isExporting, setIsExporting] = useState(false);
     const [leftWidth, setLeftWidth] = useState(50); // percentage
     const containerRef = useRef<HTMLDivElement>(null);
@@ -84,15 +104,16 @@ export default function MarkdownEditor() {
                 return;
             }
 
-            const sizes: Record<string, [number, number]> = {
-                a4: [210, 297],
-                letter: [216, 279],
-                legal: [216, 356],
-            };
+            const selectedSize = PAGE_SIZES[pageSize]?.size || PAGE_SIZES.a4.size;
+            const marginValue = MARGIN_PRESETS[marginPreset]?.value ?? 20;
+
+            // Temporarily remove padding for export
+            const originalPadding = element.style.padding;
+            element.style.padding = '0';
 
             await html2pdf()
                 .set({
-                    margin: margin,
+                    margin: marginValue,
                     filename: 'document.pdf',
                     image: { type: 'jpeg', quality: 1 },
                     html2canvas: {
@@ -104,12 +125,15 @@ export default function MarkdownEditor() {
                     },
                     jsPDF: {
                         unit: 'mm',
-                        format: sizes[pageSize],
+                        format: selectedSize,
                         orientation: 'portrait' as const,
                     },
                 })
                 .from(element)
                 .save();
+
+            // Restore padding after export
+            element.style.padding = originalPadding;
         } catch (error) {
             console.error('Export failed:', error);
             alert('Failed to export PDF');
@@ -141,23 +165,23 @@ export default function MarkdownEditor() {
                                     value={pageSize}
                                     onChange={(e) => setPageSize(e.target.value)}
                                 >
-                                    <option value="a4">A4</option>
-                                    <option value="letter">Letter</option>
-                                    <option value="legal">Legal</option>
+                                    {Object.entries(PAGE_SIZES).map(([key, { label }]) => (
+                                        <option key={key} value={key}>{label}</option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-[#f8f9fa] rounded-lg border border-[#e5e7eb]">
                                 <span className="text-sm text-[#6b7280]">Margin</span>
-                                <input
-                                    type="number"
-                                    className="w-12 bg-transparent text-sm text-[#1a1a1a] font-medium focus:outline-none text-center"
-                                    min="0"
-                                    max="50"
-                                    value={margin}
-                                    onChange={(e) => setMargin(Number(e.target.value))}
-                                />
-                                <span className="text-sm text-[#6b7280]">mm</span>
+                                <select
+                                    className="bg-transparent text-sm text-[#1a1a1a] font-medium focus:outline-none cursor-pointer"
+                                    value={marginPreset}
+                                    onChange={(e) => setMarginPreset(e.target.value)}
+                                >
+                                    {Object.entries(MARGIN_PRESETS).map(([key, { label }]) => (
+                                        <option key={key} value={key}>{label}</option>
+                                    ))}
+                                </select>
                             </div>
 
                             <button
