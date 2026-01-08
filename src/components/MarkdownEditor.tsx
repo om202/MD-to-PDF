@@ -152,9 +152,11 @@ export default function MarkdownEditor() {
                     <div className="flex flex-wrap items-center justify-between gap-4">
                         {/* Logo */}
                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-[#2563eb] rounded-lg flex items-center justify-center">
-                                <FileText className="w-4 h-4 text-white" />
-                            </div>
+                            <img
+                                src="/MD-to-PDF/logo_md_pdf.png"
+                                alt="MD to PDF Logo"
+                                className="w-9 h-9 object-contain"
+                            />
                             <h1 className="text-lg font-semibold text-[#1a1a1a]">MD to PDF</h1>
                         </div>
 

@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/MD-to-PDF',
   },
+  icons: {
+    icon: '/MD-to-PDF/favicon.ico',
+  },
   openGraph: {
     title: "MD to PDF - Free Online Markdown to PDF Converter",
     description: "Convert markdown to professional PDFs instantly. Free online tool with live preview, multiple page sizes, and syntax highlighting.",
