@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FileDown, FileText, Eye, Settings } from 'lucide-react';
 
 const defaultMarkdown = `# Markdown to PDF Converter
@@ -232,8 +234,40 @@ export default function MarkdownEditor() {
                         <span className="text-sm font-medium text-[#1a1a1a]">Preview</span>
                     </div>
                     <div className="flex-1 overflow-auto">
-                        <div id="preview" className="p-6 prose prose-sm max-w-none prose-headings:text-[#1a1a1a] prose-p:text-[#374151] prose-li:text-[#374151] prose-code:bg-[#f1f3f5] prose-code:text-[#1a1a1a] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:bg-[#f8f9fa] prose-pre:border prose-pre:border-[#e5e7eb]">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        <div id="preview" className="p-6 prose prose-sm max-w-none prose-headings:text-[#1a1a1a] prose-p:text-[#374151] prose-li:text-[#374151] prose-code:bg-[#f1f3f5] prose-code:text-[#1a1a1a] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-0">
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    code({ className, children, ...props }) {
+                                        const match = /language-(\w+)/.exec(className || '');
+                                        const codeString = String(children).replace(/\n$/, '');
+
+                                        if (match) {
+                                            return (
+                                                <SyntaxHighlighter
+                                                    style={oneLight}
+                                                    language={match[1]}
+                                                    PreTag="div"
+                                                    customStyle={{
+                                                        margin: 0,
+                                                        borderRadius: '0.5rem',
+                                                        fontSize: '0.875rem',
+                                                        border: '1px solid #e5e7eb',
+                                                    }}
+                                                >
+                                                    {codeString}
+                                                </SyntaxHighlighter>
+                                            );
+                                        }
+
+                                        return (
+                                            <code className={className} {...props}>
+                                                {children}
+                                            </code>
+                                        );
+                                    }
+                                }}
+                            >
                                 {markdown}
                             </ReactMarkdown>
                         </div>

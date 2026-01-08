@@ -34,3 +34,19 @@ body {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
 }
+
+/* Inline code styling */
+.prose :where(code):not(:where(pre code)) {
+    background-color: #f1f3f5;
+    color: #d6336c;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-weight: 500;
+    font-family: var(--font-mono);
+}
+
+.prose :where(code):not(:where(pre code))::before,
+.prose :where(code):not(:where(pre code))::after {
+    content: none;
+}
