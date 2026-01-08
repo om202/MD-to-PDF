@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FileDown, FileText, Eye, Settings } from 'lucide-react';
+import { FileDown, FileText, Eye, Settings, Github, X } from 'lucide-react';
 
 const defaultMarkdown = `# Markdown to PDF Converter
 
@@ -56,6 +56,9 @@ export default function MarkdownEditor() {
     const [pageSize, setPageSize] = useState('a4');
     const [marginPreset, setMarginPreset] = useState('normal');
     const [isExporting, setIsExporting] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [leftWidth, setLeftWidth] = useState(50); // percentage
     const containerRef = useRef<HTMLDivElement>(null);
     const isDragging = useRef(false);
@@ -95,7 +98,7 @@ export default function MarkdownEditor() {
         }
     });
 
-    const handleExport = async () => {
+    const generatePDF = async () => {
         setIsExporting(true);
         try {
             const html2pdf = (await import('html2pdf.js')).default;
@@ -113,7 +116,7 @@ export default function MarkdownEditor() {
             const originalPadding = element.style.padding;
             element.style.padding = '0';
 
-            await html2pdf()
+            const pdfWorker = html2pdf()
                 .set({
                     margin: marginValue,
                     filename: 'document.pdf',
@@ -131,18 +134,45 @@ export default function MarkdownEditor() {
                         orientation: 'portrait' as const,
                     },
                 })
-                .from(element)
-                .save();
+                .from(element);
+
+            // Generate blob and show preview
+            const blob = await pdfWorker.output('blob');
+            const url = URL.createObjectURL(blob);
+
+            setPdfBlob(blob);
+            setPdfUrl(url);
+            setShowPreview(true);
 
             // Restore padding after export
             element.style.padding = originalPadding;
         } catch (error) {
-            console.error('Export failed:', error);
-            alert('Failed to export PDF');
+            console.error('PDF generation failed:', error);
+            alert('Failed to generate PDF');
         } finally {
             setIsExporting(false);
         }
     };
+
+    const handleDownload = () => {
+        if (pdfBlob) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = 'document.pdf';
+            link.click();
+        }
+    };
+
+    const handleClosePreview = () => {
+        setShowPreview(false);
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+            setPdfUrl(null);
+            setPdfBlob(null);
+        }
+    };
+
+    const handleExport = () => generatePDF();
 
     return (
         <div className="h-screen flex flex-col bg-[#f8f9fa]">
@@ -153,7 +183,7 @@ export default function MarkdownEditor() {
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <img
-                                src="/MD-to-PDF/logo_md_pdf.png"
+                                src="/logo_md_pdf.png"
                                 alt="MD to PDF Logo"
                                 className="w-9 h-9 object-contain"
                             />
@@ -188,14 +218,27 @@ export default function MarkdownEditor() {
                                 </select>
                             </div>
 
+
+
                             <button
                                 onClick={handleExport}
                                 disabled={isExporting}
-                                className="flex items-center gap-2 bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-4 py-1.5 rounded-lg font-medium text-sm disabled:bg-[#9ca3af] disabled:cursor-not-allowed"
+                                className="flex items-center gap-2 bg-[#1a1a1a] hover:bg-black text-white px-4 py-1.5 rounded-lg font-medium text-sm disabled:bg-[#9ca3af] disabled:cursor-not-allowed cursor-pointer"
                             >
                                 <FileDown className="w-4 h-4" />
                                 {isExporting ? 'Exporting...' : 'Export PDF'}
                             </button>
+
+                            {/* GitHub Attribution */}
+                            <a
+                                href="https://github.com/om202"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hidden md:flex items-center gap-2 text-sm text-[#6b7280] hover:text-[#1a1a1a] transition-colors ml-2 pl-3 border-l border-[#e5e7eb]"
+                            >
+                                <Github className="w-4 h-4" />
+                                <span>by <span className="font-medium">Omprakash Sah</span></span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -276,6 +319,42 @@ export default function MarkdownEditor() {
                     </div>
                 </div>
             </div>
+
+            {/* PDF Preview Modal */}
+            {showPreview && pdfUrl && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb]">
+                            <h2 className="text-lg font-semibold text-[#1a1a1a]">PDF Preview</h2>
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={handleDownload}
+                                    className="flex items-center gap-2 bg-[#1a1a1a] hover:bg-black text-white px-4 py-2 rounded-lg font-medium text-sm cursor-pointer"
+                                >
+                                    <FileDown className="w-4 h-4" />
+                                    Download PDF
+                                </button>
+                                <button
+                                    onClick={handleClosePreview}
+                                    className="p-2 hover:bg-[#f8f9fa] rounded-lg transition-colors cursor-pointer"
+                                >
+                                    <X className="w-5 h-5 text-[#6b7280]" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* PDF Preview */}
+                        <div className="flex-1 overflow-hidden">
+                            <iframe
+                                src={pdfUrl}
+                                className="w-full h-full border-0"
+                                title="PDF Preview"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
