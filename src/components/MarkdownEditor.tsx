@@ -11,11 +11,32 @@ import { generatePDFBlob } from './PDFGenerator';
 // Official GitHub Markdown CSS
 import 'github-markdown-css/github-markdown-light.css';
 
-const defaultMarkdown = `# Markdown Test Document
+const defaultMarkdown = `# Welcome to MD to PDF Converter
 
-This document contains all supported Markdown elements to verify PDF conversion.
+> A powerful, free online tool for converting Markdown to professional PDF documents with live preview.
+
+## 🚀 Key Features
+
+- **Live Preview** - See your formatted document in real-time
+- **High-Quality Export** - Professional-grade PDFs
+- **Multiple Page Sizes** - A4, Letter, Legal, and more
+- **Configurable Margins** - Choose from preset margin options
+- **Syntax Highlighting** - Beautiful code blocks
+- **Emoji Support** - Full emoji rendering 🎉
+- **No Sign-up Required** - Start using immediately
+
+### Getting Started
+
+1. Edit this text in the left panel
+2. See your changes in real-time on the right
+3. Click **Export PDF** to preview
+4. Download your professional PDF
+
+New to Markdown? Check out the [Official Markdown Guide](https://www.markdownguide.org/).
 
 ---
+
+# Markdown Elements Reference
 
 ## Headings
 
@@ -34,13 +55,13 @@ This document contains all supported Markdown elements to verify PDF conversion.
 
 ~~Strikethrough text~~ for deleted content.
 
-This is a paragraph with regular text. It can span multiple lines and will wrap naturally in the document.
+This is a paragraph with regular text that wraps naturally.
 
 ---
 
 ## Links
 
-- [External Link](https://www.markdownguide.org/)
+- [Markdown Guide](https://www.markdownguide.org/)
 - [GitHub](https://github.com)
 
 ---
@@ -52,7 +73,7 @@ This is a paragraph with regular text. It can span multiple lines and will wrap 
 - Second item
   - Nested item A
   - Nested item B
-    - Deep nested item
+    - Deep nested
 - Third item
 
 ### Ordered List
@@ -62,10 +83,9 @@ This is a paragraph with regular text. It can span multiple lines and will wrap 
    2. Sub-step 2.2
 3. Third step
 
-### Task List (GFM)
+### Task List
 - [x] Completed task
 - [ ] Incomplete task
-- [ ] Another task
 
 ---
 
@@ -74,9 +94,6 @@ This is a paragraph with regular text. It can span multiple lines and will wrap 
 > This is a blockquote. It can contain multiple paragraphs.
 >
 > Second paragraph in the blockquote.
-
-> Nested blockquote:
->> This is nested inside.
 
 ---
 
@@ -88,91 +105,50 @@ Use \`const x = 10;\` for inline code.
 ### Code Blocks
 
 \`\`\`javascript
-// JavaScript example
 function greet(name) {
   return \`Hello, \${name}!\`;
 }
-
-const result = greet('World');
-console.log(result);
+console.log(greet('World'));
 \`\`\`
 
 \`\`\`python
-# Python example
 def factorial(n):
     if n <= 1:
         return 1
     return n * factorial(n - 1)
-
-print(factorial(5))
-\`\`\`
-
-\`\`\`bash
-# Bash example
-echo "Hello World"
-npm install package-name
 \`\`\`
 
 ---
 
 ## Tables
 
-| Column 1 | Column 2 | Column 3 |
-|----------|----------|----------|
-| Row 1, Cell 1 | Row 1, Cell 2 | Row 1, Cell 3 |
-| Row 2, Cell 1 | Row 2, Cell 2 | Row 2, Cell 3 |
-| Row 3, Cell 1 | Row 3, Cell 2 | Row 3, Cell 3 |
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Live Preview | ✅ Ready | High |
+| PDF Export | ✅ Ready | High |
+| Custom Themes | 🚧 Coming | Medium |
 
-### Table with Alignment
-
-| Left Aligned | Center Aligned | Right Aligned |
-|:-------------|:-------------:|--------------:|
 | Left | Center | Right |
-| Data | Data | Data |
-
----
-
-## Horizontal Rules
-
-Above the line.
-
----
-
-Below the line.
-
-***
-
-Another separator.
+|:-----|:------:|------:|
+| L    | C      | R     |
 
 ---
 
 ## Emojis 🎉
 
-Emojis in text: 🚀 📝 💡 ✅ ❌ 🎨 🔧 📊 🔥 ⭐
+Supported emojis: 🚀 📝 💡 ✅ ❌ 🎨 🔧 📊 🔥 ⭐
 
 ---
 
-## Images
+## Horizontal Rules
 
-![Placeholder](https://via.placeholder.com/150 "Placeholder Image")
+Three dashes: ---
 
----
-
-## Special Characters
-
-Special characters: & < > " ' \` * _ { } [ ] ( ) # + - . ! |
+Three asterisks: ***
 
 ---
 
-## Long Content for Page Break Testing
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
----
-
-**End of Test Document** ✅
+**Ready to create your own document? Start editing now!** ✨
 `;
 
 // Page size dimensions - mm for display, points for PDF (72 points = 1 inch)
