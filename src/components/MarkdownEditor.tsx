@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { FileDown, FileText, Eye, Settings, Github, X } from 'lucide-react';
+import { FileDown, FileText, Eye, Settings, Github, X, GripVertical, GripHorizontal } from 'lucide-react';
 import { generatePDFBlob } from './PDFGenerator';
 
 // Official GitHub Markdown CSS
@@ -178,13 +178,31 @@ export default function MarkdownEditor() {
     const [showPreview, setShowPreview] = useState(false);
     const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const [leftWidth, setLeftWidth] = useState(50); // percentage
+    const [leftWidth, setLeftWidth] = useState(50); // percentage for horizontal split
+    const [topHeight, setTopHeight] = useState(50); // percentage for vertical split
+    const [isMobile, setIsMobile] = useState(false); // track mobile vs desktop
     const containerRef = useRef<HTMLDivElement>(null);
     const isDragging = useRef(false);
+    const isVerticalDrag = useRef(false);
 
-    const handleMouseDown = useCallback(() => {
+    // Track screen size for responsive behavior
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+
+        return () => {
+            window.removeEventListener('resize', checkMobile);
+        };
+    }, []);
+
+    const handleMouseDown = useCallback((vertical: boolean) => {
         isDragging.current = true;
-        document.body.style.cursor = 'col-resize';
+        isVerticalDrag.current = vertical;
+        document.body.style.cursor = vertical ? 'row-resize' : 'col-resize';
         document.body.style.userSelect = 'none';
     }, []);
 
@@ -193,29 +211,35 @@ export default function MarkdownEditor() {
 
         const container = containerRef.current;
         const rect = container.getBoundingClientRect();
-        const newWidth = ((e.clientX - rect.left) / rect.width) * 100;
 
-        // Clamp between 20% and 80%
-        setLeftWidth(Math.min(80, Math.max(20, newWidth)));
+        if (isVerticalDrag.current) {
+            // Vertical resizing (mobile)
+            const newHeight = ((e.clientY - rect.top) / rect.height) * 100;
+            setTopHeight(Math.min(80, Math.max(20, newHeight)));
+        } else {
+            // Horizontal resizing (desktop)
+            const newWidth = ((e.clientX - rect.left) / rect.width) * 100;
+            setLeftWidth(Math.min(80, Math.max(20, newWidth)));
+        }
     }, []);
 
     const handleMouseUp = useCallback(() => {
         isDragging.current = false;
+        isVerticalDrag.current = false;
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
     }, []);
 
     // Attach global mouse events
-    useState(() => {
-        if (typeof window !== 'undefined') {
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
-            return () => {
-                window.removeEventListener('mousemove', handleMouseMove);
-                window.removeEventListener('mouseup', handleMouseUp);
-            };
-        }
-    });
+    useEffect(() => {
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [handleMouseMove, handleMouseUp]);
 
     const generatePDF = async () => {
         setIsExporting(true);
@@ -331,11 +355,14 @@ export default function MarkdownEditor() {
             </header>
 
             {/* Resizable Panels */}
-            <div ref={containerRef} className="flex-1 flex min-h-0">
+            <div ref={containerRef} className="flex-1 flex flex-col md:flex-row min-h-0">
                 {/* Editor Panel */}
                 <div
-                    className="flex flex-col bg-white border-r border-[#e5e7eb]"
-                    style={{ width: `${leftWidth}%` }}
+                    className="flex flex-col bg-white md:border-r border-[#e5e7eb]"
+                    style={{
+                        height: isMobile ? `${topHeight}%` : 'auto',
+                        width: isMobile ? '100%' : `${leftWidth}%`
+                    }}
                 >
                     <div className="flex items-center gap-2 px-4 py-2 border-b border-[#e5e7eb] bg-[#fafafa] shrink-0">
                         <FileText className="w-4 h-4 text-[#6b7280]" />
@@ -349,16 +376,35 @@ export default function MarkdownEditor() {
                     />
                 </div>
 
-                {/* Resize Handle */}
+                {/* Horizontal Resize Handle - Desktop Only */}
                 <div
-                    onMouseDown={handleMouseDown}
-                    className="w-1 bg-[#e5e7eb] hover:bg-[#2563eb] cursor-col-resize shrink-0 transition-colors"
-                />
+                    onMouseDown={() => handleMouseDown(false)}
+                    className="hidden md:block w-1.5 bg-[#e5e7eb] hover:bg-[#2563eb] cursor-col-resize shrink-0 transition-colors relative group"
+                >
+                    {/* Icon Indicator */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#e5e7eb] group-hover:bg-[#2563eb] rounded-full p-1 transition-colors pointer-events-none">
+                        <GripVertical className="w-3 h-3 text-[#6b7280] group-hover:text-white transition-colors" />
+                    </div>
+                </div>
+
+                {/* Vertical Resize Handle - Mobile Only */}
+                <div
+                    onMouseDown={() => handleMouseDown(true)}
+                    className="md:hidden h-1.5 bg-[#e5e7eb] hover:bg-[#2563eb] cursor-row-resize shrink-0 transition-colors relative group"
+                >
+                    {/* Icon Indicator */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#e5e7eb] group-hover:bg-[#2563eb] rounded-full p-1 transition-colors pointer-events-none">
+                        <GripHorizontal className="w-3 h-3 text-[#6b7280] group-hover:text-white transition-colors" />
+                    </div>
+                </div>
 
                 {/* Preview Panel */}
                 <div
                     className="flex flex-col bg-white"
-                    style={{ width: `${100 - leftWidth}%` }}
+                    style={{
+                        height: isMobile ? `${100 - topHeight}%` : 'auto',
+                        width: isMobile ? '100%' : `${100 - leftWidth}%`
+                    }}
                 >
                     <div className="flex items-center gap-2 px-4 py-2 border-b border-[#e5e7eb] bg-[#fafafa] shrink-0">
                         <Eye className="w-4 h-4 text-[#6b7280]" />
