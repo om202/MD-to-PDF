@@ -163,25 +163,25 @@ const styles = StyleSheet.create({
     // Table
     table: {
         marginVertical: 10,
+        borderWidth: 1,
+        borderColor: '#d1d9e0',
     },
     tableRow: {
         flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#d1d9e0',
-        backgroundColor: '#ffffff',
     },
     tableHeaderRow: {
         flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#d1d9e0',
+        backgroundColor: '#f6f8fa',
     },
     tableCell: {
         flex: 1,
         padding: 6,
         fontSize: 10,
         color: '#1f2328',
-        borderWidth: 1,
-        borderColor: '#d1d9e0',
+        borderRightWidth: 1,
+        borderRightColor: '#d1d9e0',
+        borderBottomWidth: 1,
+        borderBottomColor: '#d1d9e0',
     },
     tableHeaderCell: {
         fontFamily: 'Helvetica-Bold',
@@ -189,8 +189,10 @@ const styles = StyleSheet.create({
         padding: 6,
         fontSize: 10,
         color: '#1f2328',
-        borderWidth: 1,
-        borderColor: '#d1d9e0',
+        borderRightWidth: 1,
+        borderRightColor: '#d1d9e0',
+        borderBottomWidth: 1,
+        borderBottomColor: '#d1d9e0',
     },
     // Horizontal rule
     hr: {

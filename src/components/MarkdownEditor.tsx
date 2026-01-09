@@ -3,8 +3,6 @@
 import { useState, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FileDown, FileText, Eye, Settings, Github, X } from 'lucide-react';
 import { generatePDFBlob } from './PDFGenerator';
 
@@ -246,7 +244,7 @@ export default function MarkdownEditor() {
         if (pdfBlob) {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(pdfBlob);
-            link.download = 'document.pdf';
+            link.download = 'md_to_pdf.pdf';
             link.click();
         }
     };
@@ -373,30 +371,19 @@ export default function MarkdownEditor() {
                                 components={{
                                     code({ className, children, ...props }) {
                                         const match = /language-(\w+)/.exec(className || '');
-                                        const codeString = String(children).replace(/\n$/, '');
 
+                                        // For code blocks (with language)
                                         if (match) {
                                             return (
-                                                <SyntaxHighlighter
-                                                    style={oneLight}
-                                                    language={match[1]}
-                                                    PreTag="div"
-                                                    customStyle={{
-                                                        fontFamily: 'Courier, "Courier New", monospace',
-                                                        margin: '1.5em 0',
-                                                        padding: '1em 1.25em',
-                                                        borderRadius: '8px',
-                                                        fontSize: '0.875rem',
-                                                        lineHeight: '1.6',
-                                                        backgroundColor: '#f8f9fa',
-                                                        border: '1px solid #e5e7eb',
-                                                    }}
-                                                >
-                                                    {codeString}
-                                                </SyntaxHighlighter>
+                                                <pre>
+                                                    <code className={className} {...props}>
+                                                        {children}
+                                                    </code>
+                                                </pre>
                                             );
                                         }
 
+                                        // For inline code
                                         return (
                                             <code className={className} {...props}>
                                                 {children}
@@ -415,7 +402,7 @@ export default function MarkdownEditor() {
             {/* PDF Preview Modal */}
             {showPreview && pdfUrl && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col">
                         {/* Modal Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb]">
                             <h2 className="text-lg font-semibold text-[#1a1a1a]">PDF Preview</h2>
