@@ -171,6 +171,9 @@ const MARGIN_PRESETS: Record<string, { label: string; value: number }> = {
 };
 
 export default function MarkdownEditor() {
+    // Base path for GitHub Pages deployment
+    const basePath = process.env.NODE_ENV === 'production' ? '/MD-to-PDF' : '';
+
     const [markdown, setMarkdown] = useState(defaultMarkdown);
     const [pageSize, setPageSize] = useState('a4');
     const [marginPreset, setMarginPreset] = useState('normal');
@@ -293,7 +296,7 @@ export default function MarkdownEditor() {
                         {/* Logo */}
                         <div className="flex items-center gap-3">
                             <img
-                                src="/logo_md_pdf.png"
+                                src={`${basePath}/logo_md_pdf.png`}
                                 alt="MD to PDF Logo"
                                 className="w-9 h-9 object-contain"
                             />

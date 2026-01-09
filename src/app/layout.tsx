@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: '/MD-to-PDF',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: process.env.NODE_ENV === 'production' ? '/MD-to-PDF/favicon.ico' : '/favicon.ico',
   },
   openGraph: {
     title: "MD to PDF - Free Online Markdown to PDF Converter",
