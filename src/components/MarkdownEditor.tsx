@@ -176,7 +176,7 @@ export default function MarkdownEditor() {
     const basePath = process.env.NODE_ENV === 'production' ? '/MD-to-PDF' : '';
 
     const [markdown, setMarkdown] = useState(defaultMarkdown);
-    const [pageSize, setPageSize] = useState('a4');
+    const [pageSize, setPageSize] = useState('letter');
     const [marginPreset, setMarginPreset] = useState('normal');
     const [isExporting, setIsExporting] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
@@ -451,22 +451,39 @@ export default function MarkdownEditor() {
 
             {/* PDF Preview Modal */}
             {showPreview && pdfUrl && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col">
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-7xl h-[96vh] flex flex-col">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb]">
-                            <h2 className="text-lg font-semibold text-[#1a1a1a]">PDF Preview</h2>
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between px-6 py-2.5 border-b border-[#e5e7eb] gap-3">
+                            <div className="flex items-center justify-between md:justify-start gap-3">
+                                <div className="flex items-center gap-3">
+                                    <img
+                                        src={`${basePath}/logo_md_pdf.png`}
+                                        alt="MD to PDF Logo"
+                                        className="w-8 h-8 object-contain"
+                                    />
+                                    <h2 className="text-lg font-semibold text-[#1a1a1a]">
+                                        MD to PDF <span className="text-[#6b7280] font-normal">| PDF Preview</span>
+                                    </h2>
+                                </div>
+                                <button
+                                    onClick={handleClosePreview}
+                                    className="md:hidden p-2 hover:bg-[#f8f9fa] rounded-lg transition-colors cursor-pointer"
+                                >
+                                    <X className="w-5 h-5 text-[#6b7280]" />
+                                </button>
+                            </div>
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={handleDownload}
-                                    className="flex items-center gap-2 bg-[#1a1a1a] hover:bg-black text-white px-4 py-2 rounded-lg font-medium text-sm cursor-pointer"
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#1a1a1a] hover:bg-black text-white px-4 py-2 rounded-lg font-medium text-sm cursor-pointer"
                                 >
                                     <FileDown className="w-4 h-4" />
                                     Download PDF
                                 </button>
                                 <button
                                     onClick={handleClosePreview}
-                                    className="p-2 hover:bg-[#f8f9fa] rounded-lg transition-colors cursor-pointer"
+                                    className="hidden md:block p-2 hover:bg-[#f8f9fa] rounded-lg transition-colors cursor-pointer"
                                 >
                                     <X className="w-5 h-5 text-[#6b7280]" />
                                 </button>
@@ -474,10 +491,10 @@ export default function MarkdownEditor() {
                         </div>
 
                         {/* PDF Preview */}
-                        <div className="flex-1 overflow-hidden">
+                        <div className="flex-1 overflow-hidden rounded-b-lg">
                             <iframe
                                 src={pdfUrl}
-                                className="w-full h-full border-0"
+                                className="w-full h-full border-0 rounded-b-lg"
                                 title="PDF Preview"
                             />
                         </div>
