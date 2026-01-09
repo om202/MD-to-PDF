@@ -162,12 +162,13 @@ const PAGE_SIZES: Record<string, { label: string; size: [number, number]; ptsSiz
     executive: { label: 'Executive', size: [184, 267], ptsSize: [521.86, 756.85] },
 };
 
-// Margin presets in mm
+// Margin presets in mm - comprehensive scaling from minimal to generous
 const MARGIN_PRESETS: Record<string, { label: string; value: number }> = {
     none: { label: 'None', value: 0 },
     narrow: { label: 'Narrow', value: 10 },
-    normal: { label: 'Normal', value: 20 },
-    wide: { label: 'Wide', value: 30 },
+    normal: { label: 'Normal', value: 15 },
+    moderate: { label: 'Moderate', value: 20 },
+    wide: { label: 'Wide', value: 25 },
 };
 
 export default function MarkdownEditor() {
