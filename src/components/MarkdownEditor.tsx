@@ -6,6 +6,10 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { FileDown, FileText, Eye, Settings, Github, X } from 'lucide-react';
+import { generatePDFBlob } from './PDFGenerator';
+
+// Official GitHub Markdown CSS
+import 'github-markdown-css/github-markdown-light.css';
 
 const defaultMarkdown = `# Welcome to MD to PDF Converter
 
@@ -20,13 +24,13 @@ const defaultMarkdown = `# Welcome to MD to PDF Converter
 - **Syntax Highlighting** - Beautiful code blocks
 - **No Sign-up Required** - Start using immediately
 
-### � Learn More
+### Learn More
 
 New to Markdown? Check out the [Official Markdown Guide](https://www.markdownguide.org/) to master the syntax.
 
 ---
 
-## �📝 Formatting Examples
+## 📝 Formatting Examples
 
 ### Text Styling
 
@@ -88,16 +92,17 @@ def calculate_total(items):
 **Ready to create your own document? Start editing now!**
 `;
 
-// Page size dimensions in mm [width, height]
-const PAGE_SIZES: Record<string, { label: string; size: [number, number] }> = {
-    a3: { label: 'A3', size: [297, 420] },
-    a4: { label: 'A4', size: [210, 297] },
-    a5: { label: 'A5', size: [148, 210] },
-    b5: { label: 'B5', size: [176, 250] },
-    letter: { label: 'Letter', size: [216, 279] },
-    legal: { label: 'Legal', size: [216, 356] },
-    tabloid: { label: 'Tabloid', size: [279, 432] },
-    executive: { label: 'Executive', size: [184, 267] },
+// Page size dimensions - mm for display, points for PDF (72 points = 1 inch)
+// Conversion: mm * 2.83465 = points
+const PAGE_SIZES: Record<string, { label: string; size: [number, number]; ptsSize: [number, number] }> = {
+    a3: { label: 'A3', size: [297, 420], ptsSize: [841.89, 1190.55] },
+    a4: { label: 'A4', size: [210, 297], ptsSize: [595.28, 841.89] },
+    a5: { label: 'A5', size: [148, 210], ptsSize: [419.53, 595.28] },
+    b5: { label: 'B5', size: [176, 250], ptsSize: [498.9, 708.66] },
+    letter: { label: 'Letter', size: [216, 279], ptsSize: [612, 792] },
+    legal: { label: 'Legal', size: [216, 356], ptsSize: [612, 1008] },
+    tabloid: { label: 'Tabloid', size: [279, 432], ptsSize: [792, 1224] },
+    executive: { label: 'Executive', size: [184, 267], ptsSize: [521.86, 756.85] },
 };
 
 // Margin presets in mm
@@ -158,54 +163,21 @@ export default function MarkdownEditor() {
     const generatePDF = async () => {
         setIsExporting(true);
         try {
-            const html2pdf = (await import('html2pdf.js')).default;
-            const element = document.getElementById('preview');
+            // Get page size in points for react-pdf
+            const selectedPtsSize = PAGE_SIZES[pageSize]?.ptsSize || PAGE_SIZES.a4.ptsSize;
+            // Convert margin from mm to points (1mm = 2.83465 points)
+            const marginValue = (MARGIN_PRESETS[marginPreset]?.value ?? 20) * 2.83465;
 
-            if (!element) {
-                alert('Preview element not found');
-                return;
-            }
-
-            const selectedSize = PAGE_SIZES[pageSize]?.size || PAGE_SIZES.a4.size;
-            const marginValue = MARGIN_PRESETS[marginPreset]?.value ?? 20;
-
-            // Temporarily remove padding for export
-            const originalPadding = element.style.padding;
-            element.style.padding = '0';
-
-            const pdfWorker = html2pdf()
-                .set({
-                    margin: marginValue,
-                    filename: 'document.pdf',
-                    image: { type: 'jpeg', quality: 1 },
-                    html2canvas: {
-                        scale: 4,
-                        useCORS: true,
-                        logging: false,
-                        dpi: 300,
-                        letterRendering: true,
-                    },
-                    jsPDF: {
-                        unit: 'mm',
-                        format: selectedSize,
-                        orientation: 'portrait' as const,
-                    },
-                })
-                .from(element);
-
-            // Generate blob and show preview
-            const blob = await pdfWorker.output('blob');
+            // Generate PDF using @react-pdf/renderer
+            const blob = await generatePDFBlob(markdown, selectedPtsSize, marginValue);
             const url = URL.createObjectURL(blob);
 
             setPdfBlob(blob);
             setPdfUrl(url);
             setShowPreview(true);
-
-            // Restore padding after export
-            element.style.padding = originalPadding;
         } catch (error) {
             console.error('PDF generation failed:', error);
-            alert('Failed to generate PDF');
+            alert('Failed to generate PDF. Please try again.');
         } finally {
             setIsExporting(false);
         }
@@ -336,7 +308,7 @@ export default function MarkdownEditor() {
                         <span className="text-sm font-medium text-[#1a1a1a]">Preview</span>
                     </div>
                     <div className="flex-1 overflow-auto">
-                        <div id="preview" className="p-6 prose prose-sm max-w-none prose-headings:text-[#1a1a1a] prose-p:text-[#374151] prose-li:text-[#374151] prose-code:bg-[#f1f3f5] prose-code:text-[#1a1a1a] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-0">
+                        <div id="preview" className="markdown-body p-6 bg-white">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
@@ -351,9 +323,13 @@ export default function MarkdownEditor() {
                                                     language={match[1]}
                                                     PreTag="div"
                                                     customStyle={{
-                                                        margin: 0,
-                                                        borderRadius: '0.5rem',
+                                                        fontFamily: 'Courier, "Courier New", monospace',
+                                                        margin: '1.5em 0',
+                                                        padding: '1em 1.25em',
+                                                        borderRadius: '8px',
                                                         fontSize: '0.875rem',
+                                                        lineHeight: '1.6',
+                                                        backgroundColor: '#f8f9fa',
                                                         border: '1px solid #e5e7eb',
                                                     }}
                                                 >
