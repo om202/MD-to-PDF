@@ -11,85 +11,168 @@ import { generatePDFBlob } from './PDFGenerator';
 // Official GitHub Markdown CSS
 import 'github-markdown-css/github-markdown-light.css';
 
-const defaultMarkdown = `# Welcome to MD to PDF Converter
+const defaultMarkdown = `# Markdown Test Document
 
-> A powerful, free online tool for converting Markdown to professional PDF documents with live preview.
-
-## 🚀 Key Features
-
-- **Live Preview** - See your formatted document in real-time
-- **High-Quality Export** - 300 DPI, professional-grade PDFs
-- **Multiple Page Sizes** - A4, Letter, Legal, and more
-- **Configurable Margins** - Choose from preset margin options
-- **Syntax Highlighting** - Beautiful code blocks
-- **No Sign-up Required** - Start using immediately
-
-### Learn More
-
-New to Markdown? Check out the [Official Markdown Guide](https://www.markdownguide.org/) to master the syntax.
+This document contains all supported Markdown elements to verify PDF conversion.
 
 ---
 
-## 📝 Formatting Examples
+## Headings
 
-### Text Styling
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
 
-You can use **bold text**, *italic text*, or ***bold and italic*** together. You can also use ~~strikethrough~~ text.
+---
 
-### Lists
+## Text Formatting
 
-#### Unordered Lists
+**Bold text** and *italic text* and ***bold italic text***.
+
+~~Strikethrough text~~ for deleted content.
+
+This is a paragraph with regular text. It can span multiple lines and will wrap naturally in the document.
+
+---
+
+## Links
+
+- [External Link](https://www.markdownguide.org/)
+- [GitHub](https://github.com)
+
+---
+
+## Lists
+
+### Unordered List
 - First item
 - Second item
-  - Nested item 1
-  - Nested item 2
+  - Nested item A
+  - Nested item B
+    - Deep nested item
 - Third item
 
-#### Ordered Lists
+### Ordered List
 1. First step
 2. Second step
+   1. Sub-step 2.1
+   2. Sub-step 2.2
 3. Third step
+
+### Task List (GFM)
+- [x] Completed task
+- [ ] Incomplete task
+- [ ] Another task
+
+---
+
+## Blockquotes
+
+> This is a blockquote. It can contain multiple paragraphs.
+>
+> Second paragraph in the blockquote.
+
+> Nested blockquote:
+>> This is nested inside.
+
+---
+
+## Code
+
+### Inline Code
+Use \`const x = 10;\` for inline code.
 
 ### Code Blocks
 
-Inline code: \`const greeting = "Hello, World!";\`
-
-JavaScript example:
 \`\`\`javascript
-function generatePDF(content) {
-  const options = {
-    quality: 'high',
-    format: 'A4',
-    margin: '20mm'
-  };
-  return convertToPDF(content, options);
+// JavaScript example
+function greet(name) {
+  return \`Hello, \${name}!\`;
 }
+
+const result = greet('World');
+console.log(result);
 \`\`\`
 
-Python example:
 \`\`\`python
-def calculate_total(items):
-    return sum(item.price for item in items)
+# Python example
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+
+print(factorial(5))
 \`\`\`
 
-### Tables
-
-| Feature | Status | Priority |
-|---------|--------|----------|
-| Live Preview | ✅ Ready | High |
-| PDF Export | ✅ Ready | High |
-| Custom Themes | 🚧 Coming | Medium |
+\`\`\`bash
+# Bash example
+echo "Hello World"
+npm install package-name
+\`\`\`
 
 ---
 
-## 💡 Getting Started
+## Tables
 
-1. Edit this text in the left panel
-2. See your changes in real-time on the right
-3. Click **Export PDF** to preview
-4. Download your professional PDF
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| Row 1, Cell 1 | Row 1, Cell 2 | Row 1, Cell 3 |
+| Row 2, Cell 1 | Row 2, Cell 2 | Row 2, Cell 3 |
+| Row 3, Cell 1 | Row 3, Cell 2 | Row 3, Cell 3 |
 
-**Ready to create your own document? Start editing now!**
+### Table with Alignment
+
+| Left Aligned | Center Aligned | Right Aligned |
+|:-------------|:-------------:|--------------:|
+| Left | Center | Right |
+| Data | Data | Data |
+
+---
+
+## Horizontal Rules
+
+Above the line.
+
+---
+
+Below the line.
+
+***
+
+Another separator.
+
+---
+
+## Emojis 🎉
+
+Emojis in text: 🚀 📝 💡 ✅ ❌ 🎨 🔧 📊 🔥 ⭐
+
+---
+
+## Images
+
+![Placeholder](https://via.placeholder.com/150 "Placeholder Image")
+
+---
+
+## Special Characters
+
+Special characters: & < > " ' \` * _ { } [ ] ( ) # + - . ! |
+
+---
+
+## Long Content for Page Break Testing
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+---
+
+**End of Test Document** ✅
 `;
 
 // Page size dimensions - mm for display, points for PDF (72 points = 1 inch)
